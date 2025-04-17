@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Financial Planner</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Optional styling for hover effect */
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <h1>Smart Financial Planner</h1>
+
+    <div class="section">
+        <h2>Enter Total Monthly Company Expenses (₹)</h2>
+        <input type="number" id="expenses" placeholder="e.g., 500000" />
+        <button onclick="submitBudget()">Get Budget Allocation</button>
+    </div>
+
+    <div id="recommendation" class="section"></div>
+
+    <!-- Chart Controls -->
+    <div class="section" id="chartControls" style="display:none;">
+        <label for="chartType">Select Chart Type:</label>
+        <select id="chartType" onchange="plotChart()">
+            <option value="bar">Bar Chart</option>
+            <option value="line">Line Chart</option>
+        </select>
+        <button id="plotBtn" onclick="plotChart()">Show Spending Chart</button>
+    </div>
+
+    <!-- Chart Display Section -->
+    <div id="chartSection" class="section" style="display:none;">
+        <h3>Spending Breakdown Chart</h3>
+        <canvas id="spendingChart" width="400" height="300"></canvas>
+    </div>
+
+    <!-- Prophet Model Button -->
+    <div class="section" style="text-align: center; margin-top: 30px;">
+        <button onclick="window.open('https://colab.research.google.com/drive/1Rg3IPYyI-TY3HtM6x85KHHZUSeCURMzB')"
+                style="background-color: #8e44ad; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer;">
+            Open Prophet Model
+        </button>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        let latestBreakdown = null;
+        let myChart = null;
+
+        function submitBudget() {
+            const expenses = parseFloat(document.getElementById('expenses').value);
+
+            if (isNaN(expenses) || expenses <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            fetch('/api/recommendation', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ expenses })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const breakdown = data.breakdown;
+                latestBreakdown = breakdown;
+
+                const breakdownList = Object.entries(breakdown)
+                    .map(([key, val]) => `<li><strong>${key}:</strong> ₹${val}</li>`)
+                    .join('');
+
+                document.getElementById('recommendation').innerHTML = `
+                    <h3>Suggested Budget Allocation:</h3>
+                    <p><strong>Total Recommended Budget:</strong> ₹${data.total_budget}</p>
+                    <ul>${breakdownList}</ul>
+                    <p class="advice">${data.recommendation}</p>
+                `;
+
+                document.getElementById('chartControls').style.display = 'block';
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Something went wrong while getting recommendation.");
+            });
+        }
+
+        function plotChart() {
+            const ctx = document.getElementById('spendingChart').getContext('2d');
+            const breakdown = latestBreakdown;
+            const selectedType = document.getElementById('chartType').value;
+
+            if (!breakdown) {
+                alert("No data to plot!");
+                return;
+            }
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            const labels = Object.keys(breakdown);
+            const values = Object.values(breakdown);
+
+            myChart = new Chart(ctx, {
+                type: selectedType,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Spending (₹)',
+                        data: values,
+                        backgroundColor: selectedType === 'bar'
+                            ? ['#3498db', '#2ecc71', '#f1c40f', '#9b59b6', '#e67e22', '#e74c3c']
+                            : 'rgba(75, 192, 192, 0.2)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: selectedType === 'line'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('chartSection').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

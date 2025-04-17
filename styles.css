@@ -1,0 +1,95 @@
+/* General reset for margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles with background image */
+body {
+    font-family: Arial, sans-serif;
+    margin: 5;
+    padding: 0;
+    height: 100vh; /* Full viewport height */
+    width:150vh;
+    background-image: url('https://as1.ftcdn.net/v2/jpg/03/55/40/20/1000_F_355402060_F3JfUnBykuKlnY7sRg7n5DeiL8afdpMj.jpg'); /* Example online image */
+    background-size: 115%;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    display: flex;
+    flex-direction: column; /* Align children vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+    text-align: center; /* Center text by default */
+}
+
+/* Title style (Align at the top center) */
+h1 {
+    color: rgb(252, 252, 252); /* White color for the title */
+    font-size: 3rem;
+    position: absolute;
+    top: 1.5rem; 
+    left: 35%;
+    transform: translateX(-50%); /* Center the title horizontally */
+}
+
+/* Section style */
+.section {
+    margin-top: 5rem; /* Add space between the title and the section */
+    padding: 2rem;
+    background-color: rgba(24, 19, 19, 0.8); /* Semi-transparent white background for readability */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    width: 105%; /* Make section full width */
+    max-width: 600px; /* Limit width to prevent stretching */
+    text-align: center;
+}
+
+/* Input field styling */
+input[type="number"] {
+    width: 80%; /* Increase width for input */
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #c5bfbf;
+    border-radius: 5px;
+}
+
+/* Button styling */
+button {
+    padding: 0.5rem 1.2rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #2c3e50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+button:hover {
+    background-color: #1a252f;
+}
+
+/* List styles */
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    margin: 0.5rem 0;
+}
+
+/* Advice text styling */
+.advice {
+    font-style: italic;
+    margin-top: 1rem;
+    color: #00796b;
+}
+
+/* Chart styling */
+#chartControls, #chartSection {
+    margin-top: 2rem;
+}
